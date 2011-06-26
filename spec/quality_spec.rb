@@ -51,7 +51,7 @@ describe "The library itself" do
   it "can still be built" do
     Dir.chdir(File.expand_path('../../', __FILE__)) do
       `gem build webmock.gemspec`
-      $?.should be == 0
+      $?.should == 0
 
       # clean up the .gem generated
       system("rm webmock-#{WebMock.version}.gem")

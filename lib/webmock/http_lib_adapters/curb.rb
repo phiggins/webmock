@@ -90,16 +90,16 @@ if defined?(Curl)
       end
 
       def invoke_curb_callbacks
-        @on_progress.call(0.0,1.0,0.0,1.0) if defined?(@on_progress)
-        @on_header.call(self.header_str) if defined?(@on_header)
-        @on_body.call(self.body_str) if defined?(@on_body)
-        @on_complete.call(self) if defined?(@on_complete)
+        @on_progress.call(0.0,1.0,0.0,1.0) if @on_progress
+        @on_header.call(self.header_str) if @on_header
+        @on_body.call(self.body_str) if @on_body
+        @on_complete.call(self) if @on_complete
 
         case response_code
         when 200..299
-          @on_success.call(self) if defined?(@on_success)
+          @on_success.call(self) if @on_success
         when 500..599
-          @on_failure.call(self, self.response_code) if defined?(@on_failure)
+          @on_failure.call(self, self.response_code) if @on_failure
         end
       end
 
@@ -198,31 +198,31 @@ if defined?(Curl)
       alias_method :head=, :head_with_webmock=
 
       def body_str_with_webmock
-        defined?(@body_str) ? @body_str : body_str_without_webmock
+        @body_str || body_str_without_webmock
       end
       alias :body_str_without_webmock :body_str
       alias :body_str :body_str_with_webmock
 
       def response_code_with_webmock
-        defined?(@response_code) ? @response_code : response_code_without_webmock
+        @response_code || response_code_without_webmock
       end
       alias :response_code_without_webmock :response_code
       alias :response_code :response_code_with_webmock
 
       def header_str_with_webmock
-        defined?(@header_str) ? @header_str : header_str_without_webmock
+        @header_str || header_str_without_webmock
       end
       alias :header_str_without_webmock :header_str
       alias :header_str :header_str_with_webmock
 
       def last_effective_url_with_webmock
-        defined?(@last_effective_url) ? @last_effective_url : last_effective_url_without_webmock
+        @last_effective_url || last_effective_url_without_webmock
       end
       alias :last_effective_url_without_webmock :last_effective_url
       alias :last_effective_url :last_effective_url_with_webmock
 
       def content_type_with_webmock
-        defined?(@content_type) ? @content_type : content_type_without_webmock
+        @content_type || content_type_without_webmock
       end
       alias :content_type_without_webmock :content_type
       alias :content_type :content_type_with_webmock
@@ -231,7 +231,7 @@ if defined?(Curl)
         class_eval <<-METHOD, __FILE__, __LINE__
           def on_#{callback}_with_webmock &block
             @on_#{callback} = block
-            on_#{callback}_without_webmock(&block)
+            on_#{callback}_without_webmock &block
           end
         METHOD
         alias_method "on_#{callback}_without_webmock", "on_#{callback}"
